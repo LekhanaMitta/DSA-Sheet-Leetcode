@@ -10,7 +10,7 @@ public:
         {
             int root = log2(i);
             int power = pow(2, root);
-            dp[i] = dp[power] + dp[i-power];
+            dp[i] = 1 + dp[i-power];
         }
         return dp;
     }
