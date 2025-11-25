@@ -21,7 +21,7 @@ public:
         {
             int s = q.size();
             vector<int> v;
-            for(int i=q.size()-1;i>=0;i--)
+            for(int i=s-1;i>=0;i--)
             {
                 TreeNode* node = q.front();
                 q.pop();
