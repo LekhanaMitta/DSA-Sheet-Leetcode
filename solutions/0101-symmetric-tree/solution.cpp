@@ -11,15 +11,15 @@
  */
 class Solution {
 public:
-    bool isSymm(TreeNode *p, TreeNode* q)
+    bool isSymm(TreeNode* p, TreeNode* q)
     {
-        if((!p && !q))  return true;
-        if((!p && q) || (p && !q) || (p -> val != q -> val))  return false;
-        return (isSymm(p -> left, q -> right) && isSymm(p -> right, q -> left));
+        if(!p && !q)    return true;
+        if((p && !q) || (!p && q) || (p -> val != q -> val))    return false;
+        return isSymm(p -> left, q -> right) && isSymm(p -> right, q -> left);
     }
     bool isSymmetric(TreeNode* root) 
     {
-        if(!root || (root -> left == NULL && root -> right == NULL))    return true;
+        if(!root)   return true;
         return isSymm(root -> left, root -> right);    
     }
 };
