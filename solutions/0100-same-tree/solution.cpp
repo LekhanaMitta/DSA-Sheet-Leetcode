@@ -11,15 +11,10 @@
  */
 class Solution {
 public:
-    bool yesTree(TreeNode *p, TreeNode *q)
-    {
-        if(!p && !q)    return true;
-        if((p && !q) || (!p && q) || (p -> val != q -> val))  return false;
-        return (yesTree(p -> left, q -> left) && yesTree(p -> right, q -> right));
-    }
     bool isSameTree(TreeNode* p, TreeNode* q) 
     {
-        if((p && !q) || (!p && q))  return false;
-        return yesTree(p, q); 
+        if(!p && !q)    return true;
+        if((p && !q) || (!p && q) || (p -> val != q -> val))    return false;
+        return isSameTree(p->left,q->left) && isSameTree(p->right, q->right);
     }
 };
