@@ -11,25 +11,23 @@
  */
 class Solution {
 public:
+    TreeNode* node, *temp;
     void flatten(TreeNode* root) 
     {
         if(!root)   return;
+        TreeNode* temp = new TreeNode(0);
+        node = temp;
         stack<TreeNode*> q;
         q.push(root);
-        TreeNode *ans = new TreeNode(0);
-        TreeNode *temp = ans;
         while(!q.empty())
         {
-            TreeNode *out = q.top();
-            q.pop();
-            temp -> right = out;
-            temp -> left = NULL;
-            temp = out;
-            if(out -> right)
-                q.push(out -> right);
-            if(out -> left)
-                q.push(out -> left);
+            TreeNode* tree = q.top(); q.pop();
+            node -> right = tree;
+            node -> left = NULL;
+            node = node -> right;
+            if(tree -> right)   q.push(tree -> right);
+            if(tree -> left)    q.push(tree -> left);
         }
-        root = ans -> right;
+        root = temp -> right;
     }
 };
