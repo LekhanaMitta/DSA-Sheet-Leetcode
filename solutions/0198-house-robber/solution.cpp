@@ -3,23 +3,19 @@ public:
     int rob(vector<int>& nums) 
     {
         int n = nums.size();
-        // if(n == 1) return nums[0];
-        // if(n == 2) return max(nums[0], nums[1]);
-        // vector<int> dp(n+2, 0);
-        // // state : dp[i] - max money I can get starting from ith house without alerting police
-        // // recurrence: 
-        // // i) skip current house - max amount = dp[i+1] 
-        // // ii) rob current house - max amount = dp[i+2] + nums[i]
-        // for(int i = n-1;i>=0;i--)
-        //     dp[i] = max(dp[i+1], dp[i+2]+nums[i]);
-        // return dp[0];   
-        int first = 0, second = 0, ans = 0;
-        for(int i=n-1;i>=0;i--)
+        if(n == 1)  return nums[0];
+        // vector<int> dp(n+1,0);
+        // dp[1] =  nums[0], dp[2] = max(nums[0], nums[1]);
+        // for(int i=3;i<=n;i++)
+        //     dp[i] = max(dp[i-2]+nums[i-1],dp[i-1]);
+        // return dp[n];
+        int before_last = 0, last = nums[0];
+        for(int i=1;i<n;i++)
         {
-            ans = max(first, second + nums[i]);
-            second = first;
-            first = ans;
+            int ans = max(before_last + nums[i], last);
+            before_last = last;
+            last = ans;
         }
-        return ans;
+        return last;
     }
 };
