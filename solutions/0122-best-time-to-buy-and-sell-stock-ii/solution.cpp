@@ -5,10 +5,14 @@ public:
         int buy = prices[0], profit = 0;
         for(int i=1;i<prices.size();i++)
         {
-            if(buy < prices[i])
-                profit += (prices[i] - buy);
+            if(prices[i] > buy)
+                profit += (prices[i]-buy);
             buy = prices[i];
-        }    
+        }
         return profit;
     }
 };
+/*
+If u find prices[i] > buy then you will get a profit, so sell the stock.
+
+*/
