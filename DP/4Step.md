@@ -1,13 +1,13 @@
-## Stock based DP problems
-### Leetcode - 121 : Best Time to Buy and Sell Stock
-#### DP Approach
-##### State :
-```cpp
+# Stock based DP problems
+## Leetcode - 121 : Best Time to Buy and Sell Stock
+### DP Approach - 1:
+#### State :
+```
 At each day i, you only care about 2 situations:
 hold[i] = max profit up to day i if you are holding a stock
 cash[i] = max profit up to day i if you are not holding a stock
 ```
-##### Transition :
+#### Transition :
 ```
 Hold today:
 Either you were holding already, or you buy today (only allowed once, from 0 profit):
@@ -17,12 +17,53 @@ Cash today
 Either you stay in cash, or you sell today using a previous hold:
 cash[i] = max(cash[i-1], hold[i-1] + p);
 ```
-##### Base Case : 
+#### Base Case : 
 ```
 hold[0] = -prices[0]  // buy on day 0
 cash[0] = 0           // do nothing
 ```
-##### Answer :
+#### Answer :
 ```
 cash[n-1];
 ```
+### DP Approach - 2:
+#### State :
+```
+At each day i, you only care about 2 situations:
+buy[i] = min price of stock you can buy on ith day
+profit[i] = max profit of stock you can get from selling a stock on the ith day
+```
+#### Transition :
+```
+Buy today:
+Either you bought already, or you buy today (only allowed once, from 0 profit):
+buy[i] = min(buy[i-1], p);
+
+Profit today
+Either you stay in profit, or you sell today using a previous buy:
+profit[i] = max(profit[i-1], p - buy[i]);
+```
+#### Base Case : 
+```
+buy[0] = prices[0]  // buy on day 0
+profit[0] = 0           // do nothing
+```
+#### Answer :
+```
+profit[n-1];
+```
+
+### Final Code : 
+```cpp
+    int maxProfit(vector<int>& prices) 
+    {
+        int buy = prices[0], sell = 0;
+        for(int i=1;i<prices.size();i++)
+        {
+            sell = max(sell, prices[i]-buy);
+            buy = min(prices[i], buy);
+        }  
+        return sell;  
+    }
+```
+
