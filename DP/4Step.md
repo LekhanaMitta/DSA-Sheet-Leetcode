@@ -177,4 +177,96 @@ int maxProfit(vector<int>& prices)
 }
 ```
 
+## Leetcoce 123 - Best Time to Buy and Sell Stock III
+### DP Approach - 1:
+#### State :
+```
+We need to know:
+how many transactions (sells) we’ve completed: 0, 1, 2 whether we are holding a stock or in cash
+Use 4 states (optimized form):
+hold1 = max profit after 1st buy (holding)
+cash1 = max profit after 1st sell (cash)
+hold2 = max profit after 2nd buy (holding)
+cash2 = max profit after 2nd sell (cash)
+```
+#### Transition :
+```
+hold1 = max(hold1, -p)
+cash1 = max(cash1, hold1 + p)
 
+hold2 = max(hold2, cash1 - p)
+cash2 = max(cash2, hold2 + p)
+```
+#### Base Case :
+```
+hold1 = -prices[0]
+cash1 = 0
+hold2 = -prices[0]
+cash2 = 0
+```
+#### Answer :
+```
+answer = cash2
+```
+#### Code :
+```cpp
+int maxProfit(vector<int>& prices) {
+    int hold1 = -prices[0], cash1 = 0;
+    int hold2 = -prices[0], cash2 = 0;
+
+    for (int i = 1; i < prices.size(); i++) {
+        int p = prices[i];
+        hold1 = max(hold1, -p);
+        cash1 = max(cash1, hold1 + p);
+        hold2 = max(hold2, cash1 - p);
+        cash2 = max(cash2, hold2 + p);
+    }
+    return cash2;
+}
+```
+
+### DP Approach - 2 :
+#### State :
+```
+buy1 = minimum price to buy first stock
+sell1 = max profit after first sell
+
+buy2 = minimum effective price to buy second stock
+(effective because you can reuse profit from first transaction)
+sell2 = max profit after second sell
+```
+#### Transition :
+```
+buy1  = min(buy1, p)
+sell1 = max(sell1, p - buy1)
+
+buy2  = min(buy2, p - sell1)
+sell2 = max(sell2, p - buy2)
+```
+#### Base Case :
+```
+buy1 = prices[0], sell1 = 0
+buy2 = prices[0], sell2 = 0
+```
+#### Answer :
+```
+answer = sell2
+```
+#### Code :
+```cpp
+int maxProfit(vector<int>& prices) {
+    int buy1 = prices[0], sell1 = 0;
+    int buy2 = prices[0], sell2 = 0;
+
+    for (int i = 1; i < prices.size(); i++) {
+        int p = prices[i];
+
+        buy1  = min(buy1, p);
+        sell1 = max(sell1, p - buy1);
+
+        buy2  = min(buy2, p - sell1);
+        sell2 = max(sell2, p - buy2);
+    }
+    return sell2;
+}
+```
