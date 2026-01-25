@@ -3,7 +3,7 @@
 ### DP Approach - 1:
 #### State :
 ```
-At each day i, you only care about 2 situations:
+At each day i, you only care about 2 situations: 
 hold[i] = max profit up to day i if you are holding a stock
 cash[i] = max profit up to day i if you are not holding a stock
 ```
