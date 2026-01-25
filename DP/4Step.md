@@ -320,3 +320,61 @@ answer = sell[k]
         return profit[k];
     }
 ```
+## Leetcode - 309 : Best Time to Buy and Sell Stock With Cooldown
+### DP Approach :
+#### State : 
+```
+hold[i] = max profit up to day i if you are holding a stock
+sold[i] = max profit up to day i if you sold a stock today (day i)
+rest[i] = max profit up to day i if you are not holding and not selling today
+         (i.e., you are free to buy)
+```
+#### Transition :
+```
+Hold today
+Either keep holding, or buy today (you can only buy from rest, not from sold)
+hold[i] = max(hold[i-1], rest[i-1] - p)
+Sold today
+To sell today, you must have been holding yesterday
+sold[i] = hold[i-1] + p
+Either keep resting, or come from yesterday’s sold (cooldown day passes)
+rest[i] = max(rest[i-1], sold[i-1])
+```
+#### Base Case :
+```
+hold[0] = -prices[0]     // buy on day 0
+sold[0] = -∞             // impossible to sell on day 0
+rest[0] = 0              // do nothing
+```
+#### Answer :
+```
+answer = max(sold[n-1], rest[n-1])
+```
+#### Code :
+```cpp
+    int maxProfit(vector<int>& prices) 
+    {
+        /* 
+        1. Hold : either hold today or buy a stock on ith day(if buying come from cool down)
+        hold[i] = max(hold[i-1], cool[i-1]-p)
+        2. Cool : either sold yesterday or staying in cooldown on ith day
+        cool[i] = max(cool[i-1], cash[i-1])
+        3. Cash : selling on ith day
+        cash[i] = hold[i-1]+p
+        */
+        int n = prices.size();
+        int buy = INT_MIN, cool = 0, profit = INT_MIN;
+        for(int i=0;i<n;i++)
+        {
+            int prev_buy = buy, prev_profit = profit, prev_cool = cool;
+            buy = max(prev_buy, prev_cool - prices[i]);
+            profit = prev_buy + prices[i];
+            cool = max(prev_cool, prev_profit);
+            // Below one works well but we need to use the previous values to update today's
+            // buy = max(buy, cool - prices[i]);
+            // cool = max(cool, profit);
+            // profit = buy + prices[i];
+        }
+        return max(cool, profit);
+    }
+```
