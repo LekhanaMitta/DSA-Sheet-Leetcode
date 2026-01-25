@@ -270,3 +270,53 @@ int maxProfit(vector<int>& prices) {
     return sell2;
 }
 ```
+
+## Leetcode - 188 : Best Time to Buy and Sell Stock IV
+### DP Approach - 1 : 
+#### State :
+```
+For each transaction number t from 1..k:
+buy[t] = minimum effective buy cost for the t-th transaction
+sell[t] = maximum profit after t sells (t completed transactions)
+```
+#### Transition :
+```
+buy[t]  = min(buy[t],  p - sell[t-1]);
+sell[t] = max(sell[t], p - buy[t]);
+```
+#### Base Case :
+```
+sell[0] = 0
+sell[t] = 0 for all t (no profit if you never sell)
+buy[t]  = +infinity (start with very large so min() works)
+```
+#### Answer :
+```
+answer = sell[k]
+```
+#### Code : 
+```cpp
+    int maxProfit(int k, vector<int>& prices) 
+    {
+        int n = prices.size();
+        if(k>=n/2)
+        {
+            int profit = 0;
+            for (int i = 1; i < n; i++)
+                if (prices[i] > prices[i-1]) 
+                    profit += prices[i] - prices[i-1];
+            return profit;
+        }
+        vector<int> buy(k+1, INT_MAX/2);
+        vector<int> profit(k+1,0);
+        for(int i=0;i<n;i++)
+        {
+            for(int j=1;j<=k;j++)
+            {
+                buy[j] = min(buy[j],prices[i]-profit[j-1]);
+                profit[j] = max(profit[j],prices[i]-buy[j]);
+            }
+        }
+        return profit[k];
+    }
+```
