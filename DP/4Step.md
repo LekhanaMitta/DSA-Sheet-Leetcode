@@ -378,3 +378,161 @@ answer = max(sold[n-1], rest[n-1])
         return max(cool, profit);
     }
 ```
+# DP on Coin Change : 
+## Leetcode - 322 : Coin Change 
+### DP Approach :
+#### State : 
+```
+dp[x] = minimum number of coins needed to make amount x
+```
+#### Transition :
+```
+dp[x] = min(dp[x - coin] + 1)   for all coins where x - coin >= 0
+```
+#### Base Case :
+```
+dp[0] = 0     // 0 coins to make amount 0
+dp[x] = ∞     // initially assume impossible
+```
+#### Answer :
+```
+if dp[amount] == ∞ → return -1
+else return dp[amount]
+```
+#### Code :
+```cpp
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        const int INF = 1e9;
+        vector<int> dp(amount + 1, INF);
+
+        dp[0] = 0;
+
+        for (int x = 1; x <= amount; x++) {
+            for (int coin : coins) {
+                if (x - coin >= 0) {
+                    dp[x] = min(dp[x], dp[x - coin] + 1);
+                }
+            }
+        }
+
+        return dp[amount] == INF ? -1 : dp[amount];
+    }
+};
+```
+## Leetcode 518 : Coin Change II
+### DP Approach :
+#### State : 
+```
+dp[x] = number of combinations to make amount x
+```
+#### Transition :
+```
+dp[x] += dp[x - c]
+```
+#### Base Case :
+```
+dp[0] = 1
+```
+#### Answer :
+```
+dp[amount]
+```
+#### Code :
+```cpp
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        vector<long long> dp(amount + 1, 0);
+        dp[0] = 1;
+
+        for (int c : coins) {
+            for (int x = c; x <= amount; x++) {
+                dp[x] += dp[x - c];
+            }
+        }
+        return (int)dp[amount];
+    }
+};
+```
+## Leetcode 983 : Minimum Cost for Tickets 
+### DP Approach :
+#### State : 
+```
+dp[i] = minimum cost to cover travel days from index i to the end
+```
+#### Transition :
+```
+dp[i] = min(
+    cost1  + dp[next index not covered by 1-day pass],
+    cost7  + dp[next index not covered by 7-day pass],
+    cost30 + dp[next index not covered by 30-day pass]
+)
+```
+#### Base Case :
+```
+dp[n] = 0
+```
+#### Answer :
+```
+dp[0]
+```
+#### Code :
+```cpp
+class Solution {
+public:
+    int mincostTickets(vector<int>& days, vector<int>& costs) 
+    {
+        int n = days[days.size()-1];
+        vector<int> dp(n+1, 0);
+        dp[n] = 0;
+        for(int i = n-1;i>=0;i--)
+        {
+            dp[i] = min(dp[i+1]+costs[0], min(dp[min(n,i+7)]+costs[1], dp[min(n,i+30)]+costs[2]));
+        }    
+        return dp[days[0]];
+    }
+};
+```
+## Leetcode 416 : Partition Equal Subset Sum
+### DP Approach :
+#### State : 
+```
+dp[t] = true/false
+= can we form sum t using some of the numbers processed so far?
+```
+#### Transition :
+```
+for t from target down to num:
+    dp[t] = dp[t] OR dp[t - num]
+```
+#### Base Case :
+```
+dp[0] = true
+dp[others] = false
+```
+#### Answer :
+```
+dp[target]
+```
+#### Code :
+```cpp
+    bool canPartition(vector<int>& nums) 
+    {
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(),0);
+        if(sum % 2 == 1)    return 0;
+        int t = sum/2;
+        vector<bool> dp(t+1,false);
+        dp[0] = true;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=t;j>=nums[i];j--)
+            {
+                dp[j] = dp[j-nums[i]] || dp[j];
+            }
+        }    
+        return dp[t];
+    }
+```
