@@ -536,3 +536,239 @@ dp[target]
         return dp[t];
     }
 ```
+# Fibonacci Based DP Problems:
+## Leetcode - 70 : Climbing Stairs
+### DP Approach :
+#### State :
+```
+dp[i] = number of distinct ways to reach step i
+```
+#### Transition :
+```
+To reach step i, your last move must be:
+from step i-1 (1 step jump), or
+from step i-2 (2 step jump)
+dp[i] = dp[i-1] + dp[i-2]
+```
+#### Base Case :
+```
+dp[0] = 1   // one way to stay at ground (do nothing)
+dp[1] = 1   // one way: 1 step
+```
+#### Answer :
+```
+dp[n]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int climbStairs(int n) {
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+};
+```
+Can be further space optimized using just two variables, and updating them for every iteration.
+```cpp
+int climbStairs(int n) {
+    int prev2 = 1, prev1 = 1;
+    for (int i = 2; i <= n; i++) {
+        int cur = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = cur;
+    }
+    return prev1;
+}
+```
+## Leetcode - 746 : Minimum Cost Climbing Stairs
+### DP Approach :
+#### State :
+```
+dp[i] = minimum cost to reach step i
+```
+#### Transition :
+```
+To reach step i, you must come from:
+step i-1 or step i-2
+dp[i] = min(
+    dp[i-1] + cost[i-1],
+    dp[i-2] + cost[i-2]
+)
+```
+#### Base Case :
+```
+dp[0] = 0
+dp[1] = 0
+```
+#### Answer :
+```
+dp[n]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        int n = cost.size();
+        vector<int> dp(n + 1, 0);
+
+        dp[0] = 0;
+        dp[1] = 0;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = min(dp[i - 1] + cost[i - 1],
+                        dp[i - 2] + cost[i - 2]);
+        }
+        return dp[n];
+    }
+};
+```
+Further it can be space optimized :
+```cpp
+int minCostClimbingStairs(vector<int>& cost) {
+    int n = cost.size();
+    int prev2 = 0, prev1 = 0;
+
+    for (int i = 2; i <= n; i++) {
+        int cur = min(prev1 + cost[i - 1],
+                      prev2 + cost[i - 2]);
+        prev2 = prev1;
+        prev1 = cur;
+    }
+    return prev1;
+}
+```
+## Leetcode - 198 : House Robber
+### DP Approach :
+#### State :
+```
+dp[i] = maximum money you can rob from houses 0..i
+```
+#### Transition :
+```
+For house i, you have 2 choices:
+Skip house i -> take best till i-1
+Rob house i -> add nums[i] + best till i-2
+dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+```
+#### Base Case :
+```
+dp[0] = nums[0]
+dp[1] = max(nums[0], nums[1])
+```
+#### Answer :
+```
+dp[n-1]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) return nums[0];
+
+        int prev2 = nums[0];                  // dp[i-2]
+        int prev1 = max(nums[0], nums[1]);    // dp[i-1]
+
+        for (int i = 2; i < n; i++) {
+            int cur = max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = cur;
+        }
+        return prev1;
+    }
+};
+```
+## Leetcode - 213 : House Robber II
+### DP Approach :
+#### State :
+```
+dp[i] = max money you can rob from houses l..i
+```
+#### Transition :
+```
+For each house i in the chosen range:
+Skip it: keep previous best
+Rob it: add its value + best from two steps back
+cur = max(prev1, prev2 + nums[i])
+```
+#### Base Case :
+```
+So split into two cases:
+Rob from 0 .. n-2 (exclude last)
+Rob from 1 .. n-1 (exclude first)
+
+Base handling:
+If n == 1 -> answer is nums[0]
+```
+#### Answer :
+```
+answer = max( robLinear(0, n-2), robLinear(1, n-1) )
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int robLinear(vector<int>& nums, int l, int r) {
+        int prev2 = 0; // dp[i-2]
+        int prev1 = 0; // dp[i-1]
+
+        for (int i = l; i <= r; i++) {
+            int cur = max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = cur;
+        }
+        return prev1;
+    }
+
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) return nums[0];
+
+        return max(robLinear(nums, 0, n - 2),
+                   robLinear(nums, 1, n - 1));
+    }
+};
+```
+## Leetcode - :
+### DP Approach :
+#### State :
+```
+```
+#### Transition :
+```
+```
+#### Base Case :
+```
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+```
+## Leetcode - :
+### DP Approach :
+#### State :
+```
+```
+#### Transition :
+```
+```
+#### Base Case :
+```
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+```
