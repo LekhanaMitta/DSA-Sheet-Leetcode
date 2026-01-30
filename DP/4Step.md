@@ -1036,7 +1036,7 @@ public:
 };
 ```
 ## Leetcode - 115 : Distinct SubSequences
-### [DP Approach] (https://github.com/LekhanaMitta/DSA-Sheet-Leetcode/blob/main/DP/Hard/Leetcode_115.cpp) :
+### [DP Approach](https://github.com/LekhanaMitta/DSA-Sheet-Leetcode/blob/main/DP/Hard/Leetcode_115.cpp) :
 #### State :
 ```
 dp[i][j] = number of ways to form t[0..j-1] using s[0..i-1]
