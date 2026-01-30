@@ -1251,22 +1251,67 @@ public:
     }
 };
 ```
-## Leetcode - :
-### DP Approach :
+# DP on Matrix Chain Multiplication : 
+## Leetcode - 312 : [Burst Balloons](https://leetcode.com/problems/burst-balloons/description/)
+### [DP Approach](https://github.com/LekhanaMitta/DSA-Sheet-Leetcode/blob/main/DP/Hard/Leetcode_312.cpp):
 #### State :
 ```
+Add virtual balloons of value 1 at both ends:
+a = [1] + nums + [1]
+This removes edge cases.
+dp[l][r] = maximum coins obtainable by bursting all balloons
+          strictly between indices l and r (exclusive)
 ```
 #### Transition :
 ```
+pick the last balloon to burst in (l, r).
+Let k be the last balloon burst where l < k < r.
+When k is last, everything else inside (l, r) is already gone, so its neighbors are fixed: l and r.
+Coins gained from bursting k last:
+a[l] * a[k] * a[r]
+
+And the interval splits into two independent subproblems:
+burst (l, k)
+burst (k, r)
+
+So:
+dp[l][r] = max over k in (l, r):
+          dp[l][k] + dp[k][r] + a[l] * a[k] * a[r]
 ```
 #### Base Case :
 ```
+dp[l][r] = 0
 ```
 #### Answer :
 ```
+dp[0][n+1]
+n = nums.size()
 ```
 #### Code : 
 ```cpp
+class Solution {
+public:
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> a(n + 2, 1);
+        for (int i = 0; i < n; i++) a[i + 1] = nums[i];
+
+        vector<vector<int>> dp(n + 2, vector<int>(n + 2, 0));
+
+        // len = r - l
+        for (int len = 2; len <= n + 1; len++) {
+            for (int l = 0; l + len <= n + 1; l++) {
+                int r = l + len;
+                int best = 0;
+                for (int k = l + 1; k < r; k++) {
+                    best = max(best, dp[l][k] + dp[k][r] + a[l] * a[k] * a[r]);
+                }
+                dp[l][r] = best;
+            }
+        }
+        return dp[0][n + 1];
+    }
+};
 ```
 ## Leetcode - :
 ### DP Approach :
