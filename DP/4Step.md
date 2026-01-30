@@ -974,6 +974,334 @@ public:
     }
 };
 ```
+## Leetcode - 97 : Interleaving Strings
+### DP Approach :
+#### State :
+```
+dp[i][j] = true if s3[0..i+j-1] can be formed
+           using s1[0..i-1] and s2[0..j-1]
+```
+#### Transition :
+```
+Let k = i + j - 1 (index in s3 we are trying to match last).
+We can reach dp[i][j] in 2 ways:
+
+Option A: last char came from s1
+If i > 0 and s1[i-1] == s3[k], then:
+dp[i][j] |= dp[i-1][j]
+
+Option B: last char came from s2
+If j > 0 and s2[j-1] == s3[k], then:
+dp[i][j] |= dp[i][j-1]
+
+So overall:
+dp[i][j] =
+   (i>0 && dp[i-1][j] && s1[i-1]==s3[i+j-1])
+|| (j>0 && dp[i][j-1] && s2[j-1]==s3[i+j-1])
+```
+#### Base Case :
+```
+dp[0][0] = true
+
+First row (only using s2):
+dp[0][j] = dp[0][j-1] && (s2[j-1] == s3[j-1])
+
+First column (only using s1):
+dp[i][0] = dp[i-1][0] && (s1[i-1] == s3[i-1])
+```
+#### Answer :
+```
+dp[n][m]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    bool isInterleave(string s1, string s2, string s3) {
+        int n = s1.size(), m = s2.size();
+        if (n + m != (int)s3.size()) return false;
+
+        vector<vector<bool>> dp(n + 1, vector<bool>(m + 1, false));
+        dp[0][0] = true;
+
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                int k = i + j - 1;
+                if (i > 0 && s1[i - 1] == s3[k]) dp[i][j] = dp[i][j] || dp[i - 1][j];
+                if (j > 0 && s2[j - 1] == s3[k]) dp[i][j] = dp[i][j] || dp[i][j - 1];
+            }
+        }
+        return dp[n][m];
+    }
+};
+```
+## Leetcode - 115 : Distinct SubSequences
+### [DP Approach] (https://github.com/LekhanaMitta/DSA-Sheet-Leetcode/blob/main/DP/Hard/Leetcode_115.cpp) :
+#### State :
+```
+dp[i][j] = number of ways to form t[0..j-1] using s[0..i-1]
+```
+#### Transition :
+```
+Look at the last characters: s[i-1] and t[j-1].
+If they match there are 2 choices:
+i. Skip s[i-1] -> dp[i-1][j]
+ii. Use s[i-1] to match t[j-1] -> dp[i-1][j-1]
+So:
+dp[i][j] = dp[i-1][j] + dp[i-1][j-1]
+
+If they don’t match you can only skip s[i-1]:
+dp[i][j] = dp[i-1][j]
+```
+#### Base Case :
+```
+dp[i][0] = 1   for all i     // empty t can be formed in exactly 1 way
+dp[0][j] = 0   for j > 0     // non-empty t can't be formed from empty s
+```
+#### Answer :
+```
+dp[n][m]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int n = s.size(), m = t.size();
+        vector<long long> dp(m + 1, 0);
+        dp[0] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = m; j >= 1; j--) {
+                if (s[i - 1] == t[j - 1]) {
+                    dp[j] += dp[j - 1];
+                }
+            }
+        }
+        return (int)dp[m];
+    }
+};
+```
+# DP on Increasing SubSequence or Path : 
+## Leetcode - 300 : Longest Increasing Subsequence (Need to be Optimized)
+### DP Approach :
+#### State :
+```
+dp[i] = length of the longest increasing subsequence ending at index i
+```
+#### Transition :
+```
+To compute dp[i], look at all previous indices j < i.
+If nums[j] < nums[i], then nums[i] can extend the subsequence ending at j:
+dp[i] = max(dp[i], dp[j] + 1)   for all j < i where nums[j] < nums[i]
+```
+#### Base Case :
+```
+dp[i] = 1   for all i
+```
+#### Answer :
+```
+answer = max(dp[i]) over all i
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n, 1);
+
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = max(ans, dp[i]);
+        }
+        return ans;
+    }
+};
+```
+## Leetcode - 329 : Longest Increasing Path in a Matrix
+### DP Approach :
+#### State :
+```
+dp[i][j] = length of the longest strictly increasing path
+           starting from cell (i, j)
+```
+#### Transition :
+```
+From (i, j), you can go to any neighbor (x, y) where:
+matrix[x][y] > matrix[i][j]
+So:
+dp[i][j] = 1 + max(dp[x][y]) over all valid increasing neighbors
+
+If there are no valid neighbors:
+dp[i][j] = 1
+```
+#### Base Case :
+```
+dp[i][j] = 1
+```
+#### Answer :
+```
+answer = max(dp[i][j]) over all cells
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int m, n;
+    vector<vector<int>> dp;
+    int dr[4] = {1, -1, 0, 0};
+    int dc[4] = {0, 0, 1, -1};
+
+    int dfs(vector<vector<int>>& a, int r, int c) {
+        if (dp[r][c] != 0) return dp[r][c];
+
+        int best = 1;
+        for (int k = 0; k < 4; k++) {
+            int nr = r + dr[k], nc = c + dc[k];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n && a[nr][nc] > a[r][c]) {
+                best = max(best, 1 + dfs(a, nr, nc));
+            }
+        }
+        return dp[r][c] = best;
+    }
+
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        m = matrix.size();
+        n = matrix[0].size();
+        dp.assign(m, vector<int>(n, 0));
+
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                ans = max(ans, dfs(matrix, i, j));
+            }
+        }
+        return ans;
+    }
+};
+```
+## Leetcode - 2328 : Number of Increasing Paths in a Grid
+### DP Approach :
+#### State :
+```
+dp[i][j] = number of strictly increasing paths starting from cell (i, j)
+```
+#### Transition :
+```
+From (i,j), you can go to any neighbor (x,y) with a bigger value:
+grid[x][y] > grid[i][j]
+So:
+dp[i][j] = 1 + sum(dp[x][y]) over all increasing neighbors (x,y)
+
+Why sum (not max):
+We are counting all different paths.
+Each valid next step contributes additional paths.
+```
+#### Base Case :
+```
+dp[i][j] = 1
+```
+#### Answer :
+```
+answer = sum(dp[i][j]) over all cells  (mod M)
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    static const int MOD = 1000000007;
+    int m, n;
+    vector<vector<int>> dp;
+    int dr[4] = {1, -1, 0, 0};
+    int dc[4] = {0, 0, 1, -1};
+
+    int dfs(vector<vector<int>>& grid, int r, int c) {
+        if (dp[r][c] != -1) return dp[r][c];
+
+        long long ways = 1; // path of length 1: just this cell
+        for (int k = 0; k < 4; k++) {
+            int nr = r + dr[k], nc = c + dc[k];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] > grid[r][c]) {
+                ways += dfs(grid, nr, nc);
+                ways %= MOD;
+            }
+        }
+        return dp[r][c] = (int)ways;
+    }
+
+    int countPaths(vector<vector<int>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+        dp.assign(m, vector<int>(n, -1));
+
+        long long ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                ans += dfs(grid, i, j);
+                ans %= MOD;
+            }
+        }
+        return (int)ans;
+    }
+};
+```
+## Leetcode - :
+### DP Approach :
+#### State :
+```
+```
+#### Transition :
+```
+```
+#### Base Case :
+```
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+```
+## Leetcode - :
+### DP Approach :
+#### State :
+```
+```
+#### Transition :
+```
+```
+#### Base Case :
+```
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+```
+## Leetcode - :
+### DP Approach :
+#### State :
+```
+```
+#### Transition :
+```
+```
+#### Base Case :
+```
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+```
 ## Leetcode - :
 ### DP Approach :
 #### State :
