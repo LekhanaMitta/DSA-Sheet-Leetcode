@@ -738,6 +738,242 @@ public:
     }
 };
 ```
+# DP on Strings : 
+## Leetcode - 1143 : Longest Common SubSequence
+### DP Approach :
+#### State :
+```
+dp[i][j] = length of the LCS between
+           s[0..i-1] and t[0..j-1]
+```
+#### Transition :
+```
+Look at the last characters:
+s[i-1] & t[j-1]
+if s[i-1] == t[j-1]
+dp[i][j] = 1 + dp[i-1][j-1]
+else if s[i-1] != t[j-1]
+We have two choices:
+Skip s[i-1]
+Skip t[j-1]
+dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+```
+#### Base Case :
+```
+dp[i][0] = 0   for all i
+dp[0][j] = 0   for all j
+```
+#### Answer :
+```
+dp[n][m]
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int longestCommonSubsequence(string s, string t) {
+        int n = s.size(), m = t.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s[i - 1] == t[j - 1])
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                else
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+        return dp[n][m];
+    }
+};
+```
+## Leetcode - : Longest Common SubString
+### DP Approach :
+#### State :
+```
+dp[i][j] = length of the longest common substring
+           ending at s[i-1] and t[j-1]
+```
+#### Transition :
+```
+If s[i-1] == t[j-1]:
+dp[i][j] = 1 + dp[i-1][j-1]
+else
+dp[i][j] = 0
+```
+#### Base Case :
+```
+dp[0][*] = 0
+dp[*][0] = 0
+```
+#### Answer :
+```
+answer = max(dp[i][j]) over all i, j
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    int longestCommonSubstring(string s, string t) {
+        int n = s.size(), m = t.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s[i - 1] == t[j - 1]) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                    ans = max(ans, dp[i][j]);
+                } else {
+                    dp[i][j] = 0;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+```
+## Leetcode - 647 : Palindromic SubString
+### DP Approach :
+#### State :
+```
+dp[i][j] = true if substring s[i..j] is a palindrome
+```
+#### Transition :
+```
+A string is a palindrome if:
+the end characters match and the inside is also a palindrome
+dp[i][j] = (s[i] == s[j]) AND (j - i <= 2 OR dp[i+1][j-1])
+```
+#### Base Case :
+```
+dp[i][i] = true        // single character
+dp[i][i+1] = (s[i] == s[i+1])
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+string longestPalindrome(string s) {
+    int n = s.size();
+    vector<vector<bool>> dp(n, vector<bool>(n, false));
+
+    int start = 0, maxLen = 1;
+
+    for (int i = 0; i < n; i++) dp[i][i] = true;
+
+    for (int len = 2; len <= n; len++) {
+        for (int i = 0; i + len - 1 < n; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j] && (len <= 2 || dp[i+1][j-1])) {
+                dp[i][j] = true;
+                if (len > maxLen) {
+                    maxLen = len;
+                    start = i;
+                }
+            }
+        }
+    }
+    return s.substr(start, maxLen);
+}
+```
+## Leetcode - 516 : Longest Palindromic SubSequence
+### DP Approach :
+#### State :
+```dp[i][j] = length of longest palindromic subsequence in s[i..j]
+```
+#### Transition :
+```
+If characters match:
+dp[i][j] = 2 + dp[i+1][j-1]
+
+If characters don’t match:
+dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+
+Why this works:
+Matching ends -> they must be part of palindrome
+Otherwise -> skip one end and try best option
+```
+#### Base Case :
+```
+dp[i][i] = 1   // single character palindrome
+```
+#### Answer :
+```
+dp[0][n-1]
+```
+#### Code : 
+```cpp
+int longestPalindromeSubseq(string s) {
+    int n = s.size();
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+
+    for (int i = 0; i < n; i++) dp[i][i] = 1;
+
+    for (int len = 2; len <= n; len++) {
+        for (int i = 0; i + len - 1 < n; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j])
+                dp[i][j] = 2 + dp[i+1][j-1];
+            else
+                dp[i][j] = max(dp[i+1][j], dp[i][j-1]);
+        }
+    }
+    return dp[0][n-1];
+}
+```
+## Leetcode - 5 : Longest Palindromic SubString 
+### DP Approach :
+#### State :
+```
+dp[i][j] = true if s[i..j] is a palindrome
+```
+#### Transition :
+```
+A substring s[i..j] is palindrome if:
+outer chars match: s[i] == s[j] and inside is palindrome (or length is small):
+dp[i][j] = (s[i] == s[j]) AND (j - i <= 2 OR dp[i+1][j-1])
+```
+#### Base Case :
+```
+dp[i][i] = true
+dp[i][i+1] = (s[i] == s[i+1])
+```
+#### Answer :
+```
+```
+#### Code : 
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        if (n == 0) return "";
+
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        int start = 0, maxLen = 1;
+
+        for (int i = 0; i < n; i++) dp[i][i] = true;
+
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                if (s[i] == s[j] && (len <= 3 || dp[i + 1][j - 1])) {
+                    dp[i][j] = true;
+                    if (len > maxLen) {
+                        maxLen = len;
+                        start = i;
+                    }
+                }
+            }
+        }
+
+        return s.substr(start, maxLen);
+    }
+};
+```
 ## Leetcode - :
 ### DP Approach :
 #### State :
