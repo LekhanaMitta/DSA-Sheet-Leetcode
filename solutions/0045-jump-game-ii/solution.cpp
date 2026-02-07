@@ -1,21 +1,27 @@
 class Solution {
 public:
-    int jump(vector<int>& nums) 
+    int jump(vector<int>& nums)
     {
-        int n = nums.size();
-        vector<int> dp(n, INT_MAX-1);
-        // state: dp[i] -> minimum jumps needed to reach ith step from 0 index.
-        dp[0] = 0;
-        for(int i=0;i<n;i++)    
+        if(nums.size() <= 1)    return 0;
+        int steps = 0, maxReach = 0, end = 0;
+        for(int i=0;i<nums.size();i++)
         {
-            if(nums[i] == 0)
-                continue;
-            for(int j=1;j<=nums[i];j++)
+            // if(maxReach >= nums.size()-1)   return steps;
+            // if(maxReach < i+nums[i])
+            // {
+            //     steps++;
+            //     maxReach = nums[i]+i;
+                    
+            // }
+            maxReach = max(maxReach, nums[i] + i);
+            if(i == end)
             {
-                dp[min(i+j, n-1)] = min(dp[i]+1, dp[min(i+j, n-1)]);
+                steps++;
+                end = maxReach;
+                if(end >= nums.size()-1)
+                    return steps;
             }
-            cout << dp[i] << " ";
-        }
-        return dp[n-1];
+        }  
+        return steps;
     }
 };
